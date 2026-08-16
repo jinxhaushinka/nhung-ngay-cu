@@ -5,19 +5,17 @@ const password = document.getElementById("password");
 const error = document.getElementById("error");
 const postsEl = document.getElementById("post-list");
 
-login.addEventListener("submit", async (event) => {
+login.addEventListener("submit", async function (event) {
   event.preventDefault();
 
   if (password.value !== BLOG_PASSWORD) {
-    error.textContent = "Mật khẩu chưa đúng.";
+    error.textContent = "Mật khẩu không đúng.";
     error.hidden = false;
     password.select();
     return;
   }
 
-  error.textContent = "";
   error.hidden = true;
-
   gate.hidden = true;
   content.hidden = false;
 
@@ -29,22 +27,26 @@ async function loadPosts() {
     const response = await fetch("posts.json?v=" + Date.now());
 
     if (!response.ok) {
-      throw new Error("Could not load posts.json");
+      throw new Error("Không thể tải posts.json");
     }
 
     const posts = await response.json();
 
-    postsEl.innerHTML = posts.map(post => `
-      <article class="post">
-        <p class="date">${escapeHtml(post.date || "")}</p>
-        <h2>${escapeHtml(post.title || "")}</h2>
-        <div class="content">${post.body || post.content || ""}</div>
-      </article>
-    `).join("");
+    postsEl.innerHTML = posts.map(function (post) {
+      return `
+        <article class="post">
+          <p class="date">${escapeHtml(post.date || "")}</p>
+          <h2>${escapeHtml(post.title || "")}</h2>
+          <div class="content">
+            ${post.body || post.content || ""}
+          </div>
+        </article>
+      `;
+    }).join("");
 
   } catch (err) {
-    postsEl.innerHTML = "<p>Không thể tải bài viết.</p>";
     console.error(err);
+    postsEl.innerHTML = "<p>Không thể tải bài viết.</p>";
   }
 }
 
