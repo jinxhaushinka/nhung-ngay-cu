@@ -1,54 +1,55 @@
-const ITERATIONS = 250000;
-const SALT = "nhung-ngay-cu-v1";
-const enc = new TextEncoder();
-const dec = new TextDecoder();
+const gate = document.getElementById("gate");
+const blog = document.getElementById("blog");
+const login = document.getElementById("login");
+const password = document.getElementById("password");
+const error = document.getElementById("error");
+const postsEl = document.getElementById("posts");
 
-async function deriveKey(password) {
-  const material = await crypto.subtle.importKey(
-    "raw", enc.encode(password), "PBKDF2", false, ["deriveKey"]
-  );
-  return crypto.subtle.deriveKey(
-    {name:"PBKDF2", salt:enc.encode(SALT), iterations:ITERATIONS, hash:"SHA-256"},
-    material, {name:"AES-GCM", length:256}, false, ["decrypt"]
-  );
-}
+login.addEventListener("submit", async (event) => {
+  event.preventDefault();
 
-async function decryptPayload(payload, password) {
-  const key = await deriveKey(password);
-  const iv = Uint8Array.from(atob(payload.iv), c=>c.charCodeAt(0));
-  const data = Uint8Array.from(atob(payload.data), c=>c.charCodeAt(0));
-  const plain = await crypto.subtle.decrypt({name:"AES-GCM", iv}, key, data);
-  return JSON.parse(dec.decode(plain));
-}
-
-async function load() {
-  const res = await fetch("content.enc.json", {cache:"no-store"});
-  return res.json();
-}
-
-function render(posts) {
-  const box = document.getElementById("post-list");
-  box.innerHTML = posts.map(p => `
-    <article class="post">
-      <time>${p.date}</time>
-      <h2>${escapeHtml(p.title)}</h2>
-      ${p.body.split("\n\n").map(x => `<p>${escapeHtml(x).replaceAll("\n","<br>")}</p>`).join("")}
-    </article>
-  `).join("");
-}
-function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
-
-document.getElementById("login").addEventListener("submit", async e=>{
-  e.preventDefault();
-  const error=document.getElementById("error");
-  error.hidden=true;
-  try {
-    const payload=await load();
-    const posts=await decryptPayload(payload, document.getElementById("password").value);
-    render(posts);
-    document.getElementById("gate").hidden=true;
-    document.getElementById("content").hidden=false;
-  } catch {
-    error.hidden=false;
+  if (password.value !== BLOG_PASSWORD) {
+    error.textContent = "Mật khẩu chưa đúng.";
+    password.select();
+    return;
   }
+
+  error.textContent = "";
+  gate.classList.add("hidden");
+  blog.classList.remove("hidden");
+
+  await loadPosts();
 });
+
+async function loadPosts() {
+  try {
+    const response = await fetch("posts.json?v=" + Date.now());
+
+    if (!response.ok) {
+      throw new Error("Could not load posts.json");
+    }
+
+    const posts = await response.json();
+
+    postsEl.innerHTML = posts.map(post => `
+      <article class="post">
+        <p class="date">${escapeHtml(post.date || "")}</p>
+        <h2>${escapeHtml(post.title || "")}</h2>
+        <div class="content">${post.body || post.content || ""}</div>
+      </article>
+    `).join("");
+
+  } catch (err) {
+    postsEl.innerHTML = "<p>Không thể tải bài viết.</p>";
+    console.error(err);
+  }
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
