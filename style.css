@@ -12,7 +12,7 @@ body {
   margin: 0;
   background: #fff;
   color: #171717;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 main {
@@ -87,7 +87,7 @@ main {
 .hero-overlay h2 {
   margin: 0 0 38px;
 
-  font-family: "Playfair Display", Georgia, serif;
+  font-family: "EB Garamond", Inter, serif;
   font-size: clamp(48px, 6vw, 86px);
   font-weight: 600;
   line-height: 1;
@@ -131,7 +131,7 @@ main {
 .gate h2 {
   margin: 0 0 16px;
 
-  font-family: "Playfair Display", Georgia, serif;
+  font-family: "EB Garamond", Inter, serif;
   font-size: 32px;
   font-weight: 600;
 }
@@ -228,7 +228,7 @@ main {
 .post h2 {
   margin: 0 0 18px;
 
-  font-family: "Playfair Display", Georgia, serif;
+  font-family: "EB Garamond", Inter, serif;
   font-size: clamp(30px, 4vw, 48px);
   line-height: 1.15;
 }
