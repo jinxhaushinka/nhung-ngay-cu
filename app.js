@@ -1,22 +1,25 @@
 const gate = document.getElementById("gate");
-const blog = document.getElementById("blog");
+const content = document.getElementById("content");
 const login = document.getElementById("login");
 const password = document.getElementById("password");
 const error = document.getElementById("error");
-const postsEl = document.getElementById("posts");
+const postsEl = document.getElementById("post-list");
 
 login.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   if (password.value !== BLOG_PASSWORD) {
     error.textContent = "Mật khẩu chưa đúng.";
+    error.hidden = false;
     password.select();
     return;
   }
 
   error.textContent = "";
-  gate.classList.add("hidden");
-  blog.classList.remove("hidden");
+  error.hidden = true;
+
+  gate.hidden = true;
+  content.hidden = false;
 
   await loadPosts();
 });
