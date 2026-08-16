@@ -2,36 +2,77 @@
 <html lang="vi">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Những ngày cũ</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-  <main class="wrap">
-    <header>
-      <p class="eyebrow">NHỮNG NGÀY CŨ</p>
-      <h1>Ma petite vie</h1>
-      <p class="intro">hễ duỗi chân ra là kiểu gì cũng đạp phải mông một nhà thơ</p>
-    </header>
 
-    <section class="gate" id="gate">
-      <p class="lock">✦</p>
+<main>
+
+  <header class="site-header">
+    <h1>Những ngày cũ</h1>
+  </header>
+
+  <section class="hero">
+    <img src="hero.jpg" alt="">
+
+    <div class="hero-overlay">
+      <h2>Ma petite vie</h2>
+      <p>Hễ duỗi chân ra là kiểu gì cũng đạp phải mông một nhà thơ.</p>
+    </div>
+  </section>
+
+  <section class="gate" id="gate">
+
+    <div class="gate-inner">
+
+      <div class="lock">♡</div>
+
       <h2>Private little corner</h2>
-      <p>Nhập mật khẩu để đọc. Nếu là bạn tôi thì bạn sẽ biết mật khẩu.</p>
+
+      <p>
+        Nhập mật khẩu để bước vào.
+        Nếu là bạn tôi thì bạn sẽ biết mật khẩu.
+      </p>
+
       <form id="login">
-        <input id="password" type="password" autocomplete="current-password" placeholder="Mật khẩu" required>
-        <button>Enter</button>
+
+        <input
+          id="password"
+          type="password"
+          autocomplete="current-password"
+          placeholder="Mật khẩu"
+          required
+        >
+
+        <button type="submit">Enter</button>
+
       </form>
-      <p class="error" id="error" hidden>Mật khẩu không đúng. Mật khẩu có 6 kí tự.</p>
-    </section>
 
-    <section id="content" hidden>
-      <div class="post-list" id="post-list"></div>
-    </section>
+      <p class="error" id="error" hidden>
+        Mật khẩu không đúng.
+      </p>
 
-    <footer>© Những ngày cũ</footer>
-  </main>
-  <script src="config.js"></script>
-  <script src="app.js"></script>
+    </div>
+
+  </section>
+
+  <section id="content" hidden>
+
+    <div class="post-list" id="post-list"></div>
+
+  </section>
+
+  <footer>
+    © Những ngày cũ
+  </footer>
+
+</main>
+
+<script src="config.js"></script>
+<script src="app.js"></script>
+
 </body>
 </html>
