@@ -1,25 +1,303 @@
-@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Inter:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap');
 
-:root { --ink:#29251f; --muted:#82796e; --paper:#f7f4ee; --line:#ddd6ca; }
-*{box-sizing:border-box}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,system-ui,sans-serif}
-.wrap{max-width:720px;margin:0 auto;padding:72px 24px 40px}
-header{margin-bottom:72px}
-.eyebrow{font-size:11px;letter-spacing:.22em;color:var(--muted);margin-bottom:28px}
-h1,h2{font-family:"Libre Baskerville",Georgia,serif;font-weight:400}
-h1{font-size:42px;line-height:1.25;margin:0 0 18px}
-.intro{color:var(--muted);line-height:1.8;max-width:520px}
-.gate{text-align:center;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:55px 10px}
-.lock{font-size:22px}
-.gate h2{font-size:25px;margin:10px 0}
-.gate p{color:var(--muted)}
-form{display:flex;gap:8px;max-width:380px;margin:28px auto 0}
-input{flex:1;border:1px solid var(--line);background:transparent;padding:13px 14px;font:inherit;outline:none}
-button{border:1px solid var(--ink);background:var(--ink);color:white;padding:13px 20px;font:inherit;cursor:pointer}
-.error{color:#9b4b42!important;font-size:13px}
-.post{padding:30px 0;border-bottom:1px solid var(--line)}
-.post time{font-size:11px;color:var(--muted);letter-spacing:.08em}
-.post h2{font-size:25px;margin:10px 0 12px}
-.post p{line-height:1.9}
-footer{text-align:center;color:var(--muted);font-size:11px;margin-top:70px}
-@media(max-width:520px){h1{font-size:34px}form{flex-direction:column}}
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: #fff;
+  color: #171717;
+  font-family: "DM Sans", sans-serif;
+}
+
+main {
+  width: 100%;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.site-header {
+  padding: 28px 32px 34px;
+  background: #fff;
+}
+
+.site-header h1 {
+  margin: 0;
+  font-size: clamp(42px, 5vw, 72px);
+  line-height: 0.95;
+  font-weight: 700;
+  letter-spacing: -0.055em;
+}
+
+
+/* =========================
+   HERO IMAGE
+========================= */
+
+.hero {
+  position: relative;
+  width: 100%;
+  height: min(72vh, 900px);
+  min-height: 560px;
+  overflow: hidden;
+}
+
+.hero > img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center center;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+}
+
+
+/* =========================
+   TEXT ON IMAGE
+========================= */
+
+.hero-overlay {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+  padding: 40px;
+}
+
+.hero-overlay h2 {
+  margin: 0 0 38px;
+
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(48px, 6vw, 86px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.035em;
+
+  color: #050505;
+}
+
+.hero-overlay p {
+  margin: 0;
+
+  max-width: 850px;
+
+  font-size: clamp(16px, 1.5vw, 23px);
+  line-height: 1.5;
+
+  color: #111;
+}
+
+
+/* =========================
+   PASSWORD AREA
+========================= */
+
+.gate {
+  padding: 120px 24px;
+  background: #faf9f7;
+}
+
+.gate-inner {
+  width: min(500px, 100%);
+  margin: 0 auto;
+  text-align: center;
+}
+
+.lock {
+  margin-bottom: 24px;
+  font-size: 24px;
+}
+
+.gate h2 {
+  margin: 0 0 16px;
+
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 32px;
+  font-weight: 600;
+}
+
+.gate p {
+  margin: 0 auto 28px;
+  max-width: 430px;
+
+  font-size: 15px;
+  line-height: 1.7;
+  color: #555;
+}
+
+#login {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+#password {
+  flex: 1;
+
+  min-width: 0;
+  height: 48px;
+
+  padding: 0 16px;
+
+  border: 1px solid #d7d4cf;
+  border-radius: 2px;
+
+  background: #fff;
+
+  font: inherit;
+  font-size: 15px;
+
+  outline: none;
+}
+
+#password:focus {
+  border-color: #111;
+}
+
+#login button {
+  height: 48px;
+
+  padding: 0 22px;
+
+  border: 0;
+  border-radius: 2px;
+
+  background: #111;
+  color: #fff;
+
+  font: inherit;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+#login button:hover {
+  background: #333;
+}
+
+.error {
+  color: #9b2929 !important;
+  font-size: 14px !important;
+  margin-top: 14px !important;
+}
+
+
+/* =========================
+   BLOG CONTENT
+========================= */
+
+#content {
+  padding: 100px 24px;
+  background: #fff;
+}
+
+.post-list {
+  width: min(820px, 100%);
+  margin: 0 auto;
+}
+
+.post {
+  padding: 60px 0;
+  border-bottom: 1px solid #e8e5e0;
+}
+
+.post:first-child {
+  padding-top: 0;
+}
+
+.post h2 {
+  margin: 0 0 18px;
+
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(30px, 4vw, 48px);
+  line-height: 1.15;
+}
+
+.post p {
+  font-size: 17px;
+  line-height: 1.9;
+  color: #333;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+footer {
+  padding: 50px 24px;
+
+  text-align: center;
+
+  font-size: 13px;
+  color: #888;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 700px) {
+
+  .site-header {
+    padding: 22px 20px 26px;
+  }
+
+  .hero {
+    height: 70vh;
+    min-height: 500px;
+  }
+
+  .hero-overlay {
+    padding: 24px;
+  }
+
+  .hero-overlay h2 {
+    margin-bottom: 28px;
+  }
+
+  .hero-overlay p {
+    max-width: 330px;
+  }
+
+  .gate {
+    padding: 80px 20px;
+  }
+
+  #login {
+    flex-direction: column;
+  }
+
+  #login button {
+    width: 100%;
+  }
+
+  #content {
+    padding: 70px 20px;
+  }
+
+  .post {
+    padding: 45px 0;
+  }
+}
