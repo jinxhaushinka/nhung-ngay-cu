@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Những ngày cũ — Password Setup</title>
+<style>
+body{font-family:system-ui,sans-serif;max-width:600px;margin:60px auto;padding:20px;line-height:1.6}
+input,button{font:inherit;padding:12px}input{width:100%;box-sizing:border-box;margin:8px 0 14px}
+button{cursor:pointer;background:#29251f;color:#fff;border:0}.msg{margin-top:18px}
+</style></head>
+<body>
+<h1>🔐 Password setup</h1>
+<p>Nhập mật khẩu cho toàn bộ blog. Mật khẩu được dùng ngay trên trình duyệt để mã hóa nội dung.</p>
+<label>Mật khẩu cho blog</label>
+<input id="pw" type="password" autocomplete="new-password" placeholder="Nhập mật khẩu">
+<button id="go">Mã hóa & tải file</button>
+<p class="msg" id="msg"></p>
+<script>
+const ITERATIONS=250000,SALT="nhung-ngay-cu-v1",enc=new TextEncoder();
+const POSTS_URL="https://raw.githubusercontent.com/jinxhaushinka/nhung-ngay-cu/main/posts.json";
+async function keyFromPassword(pw){
+ const material=await crypto.subtle.importKey("raw",enc.encode(pw),"PBKDF2",false,["deriveKey"]);
+ return crypto.subtle.deriveKey({name:"PBKDF2",salt:enc.encode(SALT),iterations:ITERATIONS,hash:"SHA-256"},material,{name:"AES-GCM",length:256},false,["encrypt"]);
+}
+function b64(bytes){let s="";const chunk=0x8000;for(let i=0;i<bytes.length;i+=chunk)s+=String.fromCharCode(...bytes.subarray(i,i+chunk));return btoa(s)}
+document.getElementById("go").onclick=async()=>{
+ const pw=document.getElementById("pw").value,msg=document.getElementById("msg");
+ if(!pw){msg.textContent="Hãy nhập mật khẩu.";return}
+ msg.textContent="Đang lấy nội dung và mã hóa...";
+ try{
+   const r=await fetch(POSTS_URL+"?v="+Date.now());
+   if(!r.ok) throw new Error("Không đọc được posts.json (HTTP "+r.status+").");
+   const posts=await r.json();
+   const key=await keyFromPassword(pw),iv=crypto.getRandomValues(new Uint8Array(12));
+   const cipher=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,enc.encode(JSON.stringify(posts)));
+   const blob=new Blob([JSON.stringify({iv:b64(iv),data:b64(new Uint8Array(cipher))})],{type:"application/json"});
+   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="content.enc.json";a.click();
+   msg.textContent="Xong! content.enc.json đã được tải xuống. Hãy upload file đó lên GitHub.";
+ }catch(e){msg.textContent="Không chạy được: "+e.message}
+};
+</script>
+</body></html>
