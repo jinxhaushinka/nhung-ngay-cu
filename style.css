@@ -374,6 +374,31 @@ img {
   color: #111;
 }
 
+/* =========================
+   VIDEO
+========================= */
+
+.video-embed {
+  position: relative;
+
+  width: 100%;
+
+  margin: 42px 0;
+
+  aspect-ratio: 16 / 9;
+
+  overflow: hidden;
+}
+
+.video-embed iframe {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  border: 0;
+}
 
 /* =========================
    ARTICLE
