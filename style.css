@@ -242,19 +242,17 @@ img {
   color: #050505;
 }
 
-.hero-overlay p {
+.hero-overlay .hero-subtext {
+  margin: 0;
   max-width: 800px;
 
-  margin: 0;
-
   font-family: "Open Sans", sans-serif;
-  font-size: clamp(14px, 1.7vw, 23px);
+  font-size: clamp(17px, 1.8vw, 24px);
   font-weight: 400;
   line-height: 1.65;
 
   color: #111;
 }
-
 
 /* =========================
    HOME CONTENT
