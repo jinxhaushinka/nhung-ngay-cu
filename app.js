@@ -5,6 +5,8 @@ const password = document.getElementById("password");
 const error = document.getElementById("error");
 const postsEl = document.getElementById("post-list");
 
+let allPosts = [];
+
 login.addEventListener("submit", async function (event) {
   event.preventDefault();
 
@@ -30,24 +32,104 @@ async function loadPosts() {
       throw new Error("Không thể tải posts.json");
     }
 
-    const posts = await response.json();
+    allPosts = await response.json();
 
-    postsEl.innerHTML = posts.map(function (post) {
-      return `
-        <article class="post">
-          <p class="date">${escapeHtml(post.date || "")}</p>
-          <h2>${escapeHtml(post.title || "")}</h2>
-          <div class="content">
-            ${post.body || post.content || ""}
-          </div>
-        </article>
-      `;
-    }).join("");
+    const postId = new URLSearchParams(window.location.search).get("post");
+
+    if (postId) {
+      showSinglePost(postId);
+    } else {
+      showPostList();
+    }
 
   } catch (err) {
     console.error(err);
     postsEl.innerHTML = "<p>Không thể tải bài viết.</p>";
   }
+}
+
+function showPostList() {
+  postsEl.innerHTML = allPosts.map(function (post) {
+    const excerpt = createExcerpt(post.content || post.body || "");
+
+    return `
+      <article class="post-preview">
+        <p class="date">${escapeHtml(post.date || "")}</p>
+
+        <h2>
+          <a href="?post=${encodeURIComponent(post.id)}">
+            ${escapeHtml(post.title || "")}
+          </a>
+        </h2>
+
+        <p class="excerpt">
+          ${escapeHtml(excerpt)}
+        </p>
+
+        <a class="read-more" href="?post=${encodeURIComponent(post.id)}">
+          Đọc tiếp →
+        </a>
+      </article>
+    `;
+  }).join("");
+}
+
+function showSinglePost(postId) {
+  const post = allPosts.find(function (item) {
+    return String(item.id) === String(postId);
+  });
+
+  if (!post) {
+    postsEl.innerHTML = `
+      <p>Không tìm thấy bài viết.</p>
+      <p><a href="./">← Quay lại</a></p>
+    `;
+    return;
+  }
+
+  postsEl.innerHTML = `
+    <article class="single-post">
+
+      <a class="back-link" href="./">
+        ← Những ngày cũ
+      </a>
+
+      <p class="date">${escapeHtml(post.date || "")}</p>
+
+      <h1>${escapeHtml(post.title || "")}</h1>
+
+      <div class="content">
+        ${post.content || post.body || ""}
+      </div>
+
+      <p class="back-bottom">
+        <a href="./">← Quay lại những ngày cũ</a>
+      </p>
+
+    </article>
+  `;
+}
+
+function createExcerpt(html) {
+  const temp = document.createElement("div");
+  temp.innerHTML = html;
+
+  // Bỏ ảnh, video, embed khỏi excerpt
+  temp.querySelectorAll("img, video, iframe, figure, audio").forEach(function (el) {
+    el.remove();
+  });
+
+  let text = temp.textContent || temp.innerText || "";
+
+  // Xóa khoảng trắng thừa
+  text = text.replace(/\s+/g, " ").trim();
+
+  // Giới hạn excerpt khoảng 180 ký tự
+  if (text.length > 180) {
+    text = text.substring(0, 180).trim() + "...";
+  }
+
+  return text;
 }
 
 function escapeHtml(value) {
