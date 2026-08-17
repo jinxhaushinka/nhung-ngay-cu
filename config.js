@@ -1,1 +1,1 @@
-const BLOG_PASSWORD = "meomeo";
+const BLOG_PASSWORD = "phamminhphuong";
