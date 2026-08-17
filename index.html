@@ -3,7 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>Những ngày cũ</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&family=Montserrat:wght@500;600;700&family=Open+Sans:wght@400;500&display=swap"
+    rel="stylesheet"
+  >
+
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -11,31 +21,17 @@
 
 <main>
 
-  <header class="site-header">
-    <h1>Những ngày cũ</h1>
-  </header>
-
-  <section class="hero">
-    <img src="hero.jpg" alt="">
-
-    <div class="hero-overlay">
-      <h2>Ma petite vie</h2>
-      <p>Hễ duỗi chân ra là kiểu gì cũng đạp phải mông một nhà thơ.</p>
-    </div>
-  </section>
+  <!-- =========================
+       PASSWORD SCREEN
+  ========================== -->
 
   <section class="gate" id="gate">
 
     <div class="gate-inner">
 
-      <div class="lock">♡</div>
+      <p class="gate-name">Những ngày cũ</p>
 
-      <h2>Private little corner</h2>
-
-      <p>
-        Nhập mật khẩu để bước vào.
-        Nếu là bạn tôi thì bạn sẽ biết mật khẩu.
-      </p>
+      <h1>ma petite vie</h1>
 
       <form id="login">
 
@@ -44,10 +40,13 @@
           type="password"
           autocomplete="current-password"
           placeholder="Mật khẩu"
+          aria-label="Mật khẩu"
           required
         >
 
-        <button type="submit">Enter</button>
+        <button type="submit" aria-label="Vào blog">
+          →
+        </button>
 
       </form>
 
@@ -59,17 +58,64 @@
 
   </section>
 
-  <section id="content" hidden>
 
-    <div class="post-list" id="post-list"></div>
+  <!-- =========================
+       BLOG
+  ========================== -->
+
+  <section id="blog" hidden>
+
+    <!-- HOME -->
+
+    <div id="home">
+
+      <header class="hero">
+
+        <img src="hero.jpg" alt="">
+
+        <div class="hero-overlay">
+
+          <h1>ma petite vie</h1>
+
+          <p>
+            Hễ duỗi chân ra là kiểu gì cũng đạp phải mông một nhà thơ.
+          </p>
+
+        </div>
+
+      </header>
+
+
+      <section class="home-content">
+
+        <div class="section-heading">
+          <span>tản mạn</span>
+        </div>
+
+        <div class="post-list" id="post-list"></div>
+
+      </section>
+
+    </div>
+
+
+    <!-- ARTICLE -->
+
+    <div id="article" hidden>
+
+      <article class="single-post" id="single-post"></article>
+
+    </div>
+
+
+    <footer>
+      © Những ngày cũ
+    </footer>
 
   </section>
 
-  <footer>
-    © Những ngày cũ
-  </footer>
-
 </main>
+
 
 <script src="config.js"></script>
 <script src="app.js"></script>
