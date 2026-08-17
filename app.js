@@ -374,20 +374,48 @@ function processWordPressContent(html) {
    RECOMMENDATIONS
 ========================= */
 
-function getRecommendations(
-  currentPostId
-) {
+function getRecommendations(currentPostId) {
 
-  const otherPosts =
-    allPosts.filter(function (post) {
+  const currentPost = allPosts.find(function (post) {
+    return String(post.id) === String(currentPostId);
+  });
 
-      return String(post.id) !==
-        String(currentPostId);
+  if (!currentPost) {
+    return [];
+  }
+
+  const currentDate = new Date(currentPost.date);
+
+  const otherPosts = allPosts
+    .filter(function (post) {
+      return String(post.id) !== String(currentPostId);
+    })
+    .map(function (post) {
+
+      const postDate = new Date(post.date);
+
+      const distance = Math.abs(
+        postDate - currentDate
+      );
+
+      return {
+        post: post,
+        distance: distance
+      };
+
+    })
+    .sort(function (a, b) {
+
+      return a.distance - b.distance;
 
     });
 
 
-  return otherPosts.slice(0, 3);
+  return otherPosts
+    .slice(0, 3)
+    .map(function (item) {
+      return item.post;
+    });
 }
 
 
