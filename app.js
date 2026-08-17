@@ -43,7 +43,7 @@ login.addEventListener("submit", async function (event) {
 
   if (enteredPassword !== BLOG_PASSWORD) {
 
-    error.textContent = "Mật khẩu không đúng.";
+    error.textContent = "Không đúng. Bạn không phải bạn tôi.";
     error.hidden = false;
 
     password.select();
