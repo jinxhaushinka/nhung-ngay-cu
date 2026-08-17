@@ -29,7 +29,7 @@
 
   <div class="gate-inner">
 
-    <p class="gate-name">Những ngày cũ</p>
+    <p class="gate-name">Welcome to</p>
 
     <h1>ma petite vie</h1>
 
@@ -44,8 +44,8 @@
         id="password"
         type="password"
         autocomplete="current-password"
-        placeholder="Mật khẩu"
-        aria-label="Mật khẩu"
+        placeholder="Nhập kí tự"
+        aria-label="Nhập kí tự"
         required
       >
 
@@ -56,7 +56,7 @@
     </form>
 
     <p class="error" id="error" hidden>
-      Mật khẩu không đúng.
+      Không đúng. Bạn không phải bạn tôi.
     </p>
 
   </div>
@@ -65,30 +65,52 @@
 
 
   <!-- =========================
-       BLOG
-  ========================== -->
+     BLOG
+========================= -->
 
-  <section id="blog" hidden>
+<section id="blog" hidden>
 
-    <!-- HOME -->
+  <!-- HOME -->
 
-    <div id="home">
+  <div id="home">
 
-      <header class="hero">
+    <header class="site-header">
+      <h1>Những ngày cũ</h1>
+    </header>
 
-        <img src="hero.jpg" alt="">
+    <section class="hero">
 
-        <div class="hero-overlay">
+      <img src="hero.jpg" alt="">
 
-          <h1>ma petite vie</h1>
+      <div class="hero-overlay">
 
-          <p>
-            Hễ duỗi chân ra là kiểu gì cũng đạp phải mông một nhà thơ.
-          </p>
+        <h2>ma petite vie</h2>
 
-        </div>
+        <p class="hero-subtext">
+          Hễ duỗi chân ra là kiểu gì cũng đạp phải mông một nhà thơ.
+        </p>
 
-      </header>
+      </div>
+
+    </section>
+
+    <section id="content">
+
+      <div class="post-list" id="post-list"></div>
+
+    </section>
+
+  </div>
+
+  <!-- ARTICLE -->
+
+  <div id="article" hidden>
+
+    <div id="single-post"></div>
+
+  </div>
+
+</section>
 
 
       <section class="home-content">
