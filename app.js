@@ -21,7 +21,9 @@ let allPosts = [];
 ========================= */
 
 document.addEventListener("DOMContentLoaded", function () {
-  const isUnlocked = sessionStorage.getItem(SESSION_KEY) === "true";
+
+  const isUnlocked =
+    sessionStorage.getItem(SESSION_KEY) === "true";
 
   if (isUnlocked) {
     unlockBlog();
@@ -34,11 +36,13 @@ document.addEventListener("DOMContentLoaded", function () {
 ========================= */
 
 login.addEventListener("submit", async function (event) {
+
   event.preventDefault();
 
   const enteredPassword = password.value;
 
   if (enteredPassword !== BLOG_PASSWORD) {
+
     error.textContent = "Mật khẩu không đúng.";
     error.hidden = false;
 
@@ -49,7 +53,10 @@ login.addEventListener("submit", async function (event) {
 
   error.hidden = true;
 
-  sessionStorage.setItem(SESSION_KEY, "true");
+  sessionStorage.setItem(
+    SESSION_KEY,
+    "true"
+  );
 
   await unlockBlog();
 });
@@ -60,6 +67,7 @@ login.addEventListener("submit", async function (event) {
 ========================= */
 
 async function unlockBlog() {
+
   gate.hidden = true;
   blog.hidden = false;
 
@@ -72,48 +80,69 @@ async function unlockBlog() {
 ========================= */
 
 async function loadPosts() {
+
   try {
-    const response = await fetch("posts.json?v=" + Date.now());
+
+    const response = await fetch(
+      "posts.json?v=" + Date.now()
+    );
 
     if (!response.ok) {
-      throw new Error("Không thể tải posts.json");
+      throw new Error(
+        "Không thể tải posts.json"
+      );
     }
 
     allPosts = await response.json();
 
-    const postId = new URLSearchParams(window.location.search).get("post");
+    const postId =
+      new URLSearchParams(
+        window.location.search
+      ).get("post");
+
 
     if (postId) {
+
       showSinglePost(postId);
+
     } else {
+
       showPostList();
+
     }
 
   } catch (err) {
+
     console.error(err);
 
     if (postIdExists()) {
+
       singlePostEl.innerHTML = `
         <p>Không thể tải bài viết.</p>
       `;
+
     } else {
+
       postsEl.innerHTML = `
         <p>Không thể tải bài viết.</p>
       `;
+
     }
   }
 }
 
 
 /* =========================
-   HOME / POST LIST
+   HOME
 ========================= */
 
 function showPostList() {
+
   home.hidden = false;
   article.hidden = true;
 
   if (!allPosts.length) {
+
     postsEl.innerHTML = `
       <p>Chưa có bài viết.</p>
     `;
@@ -121,21 +150,32 @@ function showPostList() {
     return;
   }
 
+
   postsEl.innerHTML = allPosts.map(function (post) {
 
-    const excerpt = createExcerpt(
-      post.content || post.body || ""
-    );
+    /*
+     * Dùng excerpt riêng từ WordPress.
+     * Không tự cắt content nữa.
+     */
+
+    const excerpt =
+      post.excerpt || "";
+
 
     const postUrl =
-      "?post=" + encodeURIComponent(post.id);
+      "?post=" +
+      encodeURIComponent(post.id);
+
 
     return `
+
       <article class="post-preview">
 
         <h2>
           <a href="${postUrl}">
-            ${escapeHtml(post.title || "")}
+            ${escapeHtml(
+              post.title || ""
+            )}
           </a>
         </h2>
 
@@ -144,10 +184,13 @@ function showPostList() {
         </p>
 
         <p class="date">
-          ${escapeHtml(post.date || "")}
+          ${escapeHtml(
+            post.date || ""
+          )}
         </p>
 
       </article>
+
     `;
 
   }).join("");
@@ -159,53 +202,81 @@ function showPostList() {
 ========================= */
 
 function showSinglePost(postId) {
+
   const post = allPosts.find(function (item) {
-    return String(item.id) === String(postId);
+
+    return String(item.id) ===
+      String(postId);
+
   });
+
 
   home.hidden = true;
   article.hidden = false;
 
+
   if (!post) {
+
     singlePostEl.innerHTML = `
-      <a class="back-link" href="./">
+
+      <a
+        class="back-link"
+        href="./"
+      >
         ← Những ngày cũ
       </a>
 
       <div class="single-post-header">
-        <h1>Không tìm thấy bài viết</h1>
+
+        <h1>
+          Không tìm thấy bài viết
+        </h1>
+
       </div>
+
     `;
 
     return;
   }
 
 
-  /* =========================
-     RECOMMENDATIONS
-  ========================== */
-
-  const recommendations = getRecommendations(post.id);
+  const recommendations =
+    getRecommendations(post.id);
 
 
-  /* =========================
-     ARTICLE HTML
-  ========================== */
+  /*
+   * Convert WordPress content
+   * thành HTML browser có thể render.
+   */
+
+  const processedContent =
+    processWordPressContent(
+      post.content || post.body || ""
+    );
+
 
   singlePostEl.innerHTML = `
 
-    <a class="back-link" href="./">
+    <a
+      class="back-link"
+      href="./"
+    >
       ← Những ngày cũ
     </a>
+
 
     <header class="single-post-header">
 
       <h1>
-        ${escapeHtml(post.title || "")}
+        ${escapeHtml(
+          post.title || ""
+        )}
       </h1>
 
       <p class="date">
-        ${escapeHtml(post.date || "")}
+        ${escapeHtml(
+          post.date || ""
+        )}
       </p>
 
     </header>
@@ -215,17 +286,23 @@ function showSinglePost(postId) {
 
 
     <div class="article-body">
-      ${post.content || post.body || ""}
+
+      ${processedContent}
+
     </div>
 
 
-    ${renderRecommendations(recommendations)}
+    ${renderRecommendations(
+      recommendations
+    )}
 
 
     <p class="back-bottom">
+
       <a href="./">
         ← Quay lại những ngày cũ
       </a>
+
     </p>
 
   `;
@@ -233,116 +310,141 @@ function showSinglePost(postId) {
 
 
 /* =========================
+   WORDPRESS CONTENT
+========================= */
+
+function processWordPressContent(html) {
+
+  if (!html) {
+    return "";
+  }
+
+
+  /*
+   * YouTube embed
+   */
+
+  html = html.replace(
+    /<figure[^>]*class="[^"]*wp-block-embed[^"]*"[^>]*>[\s\S]*?<div[^>]*class="[^"]*wp-block-embed__wrapper[^"]*"[^>]*>\s*(https?:\/\/(?:www\.)?youtube\.com\/watch\?v=([^&\s<]+)[^\s<]*)\s*<\/div>[\s\S]*?<\/figure>/gi,
+
+    function (
+      match,
+      fullUrl,
+      videoId
+    ) {
+
+      return `
+
+        <div class="video-embed">
+
+          <iframe
+            src="https://www.youtube.com/embed/${videoId}"
+            title="YouTube video"
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+          </iframe>
+
+        </div>
+
+      `;
+    }
+  );
+
+
+  /*
+   * Xóa WordPress block comments.
+   *
+   * Ví dụ:
+   * <!-- wp:paragraph -->
+   * <!-- /wp:paragraph -->
+   */
+
+  html = html.replace(
+    /<!--\s*\/?wp:[\s\S]*?-->/gi,
+    ""
+  );
+
+
+  return html;
+}
+
+
+/* =========================
    RECOMMENDATIONS
 ========================= */
 
-function getRecommendations(currentPostId) {
+function getRecommendations(
+  currentPostId
+) {
 
-  const otherPosts = allPosts.filter(function (post) {
-    return String(post.id) !== String(currentPostId);
-  });
+  const otherPosts =
+    allPosts.filter(function (post) {
 
-  /*
-   * Lấy 3 bài đầu tiên sau khi loại bài hiện tại.
-   * Như vậy recommendation ổn định, không nhảy ngẫu nhiên
-   * mỗi lần refresh.
-   */
+      return String(post.id) !==
+        String(currentPostId);
+
+    });
+
 
   return otherPosts.slice(0, 3);
 }
 
 
-function renderRecommendations(posts) {
+function renderRecommendations(
+  posts
+) {
 
   if (!posts.length) {
     return "";
   }
 
+
   return `
+
     <section class="recommendations">
 
       <h2 class="recommendations-title">
-          Những tản mạn linh tinh khác
+        Những tản mạn linh tinh khác
       </h2>
+
 
       ${posts.map(function (post) {
 
         const postUrl =
-          "?post=" + encodeURIComponent(post.id);
+          "?post=" +
+          encodeURIComponent(post.id);
+
 
         return `
+
           <article class="recommendation">
 
             <a href="${postUrl}">
 
               <h3>
-                ${escapeHtml(post.title || "")}
+                ${escapeHtml(
+                  post.title || ""
+                )}
               </h3>
 
               <p class="date">
-                ${escapeHtml(post.date || "")}
+                ${escapeHtml(
+                  post.date || ""
+                )}
               </p>
 
             </a>
 
           </article>
+
         `;
 
       }).join("")}
 
     </section>
+
   `;
-}
-
-
-/* =========================
-   EXCERPT
-========================= */
-
-function createExcerpt(html) {
-
-  const temp = document.createElement("div");
-
-  temp.innerHTML = html;
-
-
-  /*
-   * Không lấy những element không phù hợp
-   * để làm excerpt.
-   */
-
-  temp
-    .querySelectorAll(
-      "img, video, iframe, figure, audio, script, style"
-    )
-    .forEach(function (el) {
-      el.remove();
-    });
-
-
-  let text =
-    temp.textContent ||
-    temp.innerText ||
-    "";
-
-
-  text = text
-    .replace(/\s+/g, " ")
-    .trim();
-
-
-  /*
-   * Giới hạn excerpt.
-   */
-
-  if (text.length > 180) {
-    text =
-      text.substring(0, 180).trim() +
-      "...";
-  }
-
-
-  return text;
 }
 
 
@@ -353,11 +455,31 @@ function createExcerpt(html) {
 function escapeHtml(value) {
 
   return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
 }
 
 
@@ -366,7 +488,12 @@ function escapeHtml(value) {
 ========================= */
 
 function postIdExists() {
+
   return Boolean(
-    new URLSearchParams(window.location.search).get("post")
+
+    new URLSearchParams(
+      window.location.search
+    ).get("post")
+
   );
 }
