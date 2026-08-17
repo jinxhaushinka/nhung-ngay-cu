@@ -1,28 +1,75 @@
 const gate = document.getElementById("gate");
-const content = document.getElementById("content");
+const blog = document.getElementById("blog");
+
+const home = document.getElementById("home");
+const article = document.getElementById("article");
+
 const login = document.getElementById("login");
 const password = document.getElementById("password");
 const error = document.getElementById("error");
+
 const postsEl = document.getElementById("post-list");
+const singlePostEl = document.getElementById("single-post");
+
+const SESSION_KEY = "nhung-ngay-cu-unlocked";
 
 let allPosts = [];
+
+
+/* =========================
+   INITIALIZE
+========================= */
+
+document.addEventListener("DOMContentLoaded", function () {
+  const isUnlocked = sessionStorage.getItem(SESSION_KEY) === "true";
+
+  if (isUnlocked) {
+    unlockBlog();
+  }
+});
+
+
+/* =========================
+   LOGIN
+========================= */
 
 login.addEventListener("submit", async function (event) {
   event.preventDefault();
 
-  if (password.value !== BLOG_PASSWORD) {
+  const enteredPassword = password.value;
+
+  if (enteredPassword !== BLOG_PASSWORD) {
     error.textContent = "Mật khẩu không đúng.";
     error.hidden = false;
+
     password.select();
+
     return;
   }
 
   error.hidden = true;
+
+  sessionStorage.setItem(SESSION_KEY, "true");
+
+  await unlockBlog();
+});
+
+
+/* =========================
+   UNLOCK
+========================= */
+
+async function unlockBlog() {
   gate.hidden = true;
-  content.hidden = false;
+  blog.hidden = false;
 
   await loadPosts();
-});
+}
+
+
+/* =========================
+   LOAD POSTS
+========================= */
 
 async function loadPosts() {
   try {
@@ -44,20 +91,50 @@ async function loadPosts() {
 
   } catch (err) {
     console.error(err);
-    postsEl.innerHTML = "<p>Không thể tải bài viết.</p>";
+
+    if (postIdExists()) {
+      singlePostEl.innerHTML = `
+        <p>Không thể tải bài viết.</p>
+      `;
+    } else {
+      postsEl.innerHTML = `
+        <p>Không thể tải bài viết.</p>
+      `;
+    }
   }
 }
 
+
+/* =========================
+   HOME / POST LIST
+========================= */
+
 function showPostList() {
+  home.hidden = false;
+  article.hidden = true;
+
+  if (!allPosts.length) {
+    postsEl.innerHTML = `
+      <p>Chưa có bài viết.</p>
+    `;
+
+    return;
+  }
+
   postsEl.innerHTML = allPosts.map(function (post) {
-    const excerpt = createExcerpt(post.content || post.body || "");
+
+    const excerpt = createExcerpt(
+      post.content || post.body || ""
+    );
+
+    const postUrl =
+      "?post=" + encodeURIComponent(post.id);
 
     return `
       <article class="post-preview">
-        <p class="date">${escapeHtml(post.date || "")}</p>
 
         <h2>
-          <a href="?post=${encodeURIComponent(post.id)}">
+          <a href="${postUrl}">
             ${escapeHtml(post.title || "")}
           </a>
         </h2>
@@ -66,77 +143,230 @@ function showPostList() {
           ${escapeHtml(excerpt)}
         </p>
 
-        <a class="read-more" href="?post=${encodeURIComponent(post.id)}">
-          Đọc tiếp →
-        </a>
+        <p class="date">
+          ${escapeHtml(post.date || "")}
+        </p>
+
       </article>
     `;
+
   }).join("");
 }
+
+
+/* =========================
+   SINGLE POST
+========================= */
 
 function showSinglePost(postId) {
   const post = allPosts.find(function (item) {
     return String(item.id) === String(postId);
   });
 
+  home.hidden = true;
+  article.hidden = false;
+
   if (!post) {
-    postsEl.innerHTML = `
-      <p>Không tìm thấy bài viết.</p>
-      <p><a href="./">← Quay lại</a></p>
-    `;
-    return;
-  }
-
-  postsEl.innerHTML = `
-    <article class="single-post">
-
+    singlePostEl.innerHTML = `
       <a class="back-link" href="./">
         ← Những ngày cũ
       </a>
 
-      <p class="date">${escapeHtml(post.date || "")}</p>
-
-      <h1>${escapeHtml(post.title || "")}</h1>
-
-      <div class="content">
-        ${post.content || post.body || ""}
+      <div class="single-post-header">
+        <h1>Không tìm thấy bài viết</h1>
       </div>
+    `;
 
-      <p class="back-bottom">
-        <a href="./">← Quay lại những ngày cũ</a>
+    return;
+  }
+
+
+  /* =========================
+     RECOMMENDATIONS
+  ========================== */
+
+  const recommendations = getRecommendations(post.id);
+
+
+  /* =========================
+     ARTICLE HTML
+  ========================== */
+
+  singlePostEl.innerHTML = `
+
+    <a class="back-link" href="./">
+      ← Những ngày cũ
+    </a>
+
+    <header class="single-post-header">
+
+      <h1>
+        ${escapeHtml(post.title || "")}
+      </h1>
+
+      <p class="date">
+        ${escapeHtml(post.date || "")}
       </p>
 
-    </article>
+    </header>
+
+
+    <div class="article-divider"></div>
+
+
+    <div class="article-body">
+      ${post.content || post.body || ""}
+    </div>
+
+
+    ${renderRecommendations(recommendations)}
+
+
+    <p class="back-bottom">
+      <a href="./">
+        ← Quay lại những ngày cũ
+      </a>
+    </p>
+
   `;
 }
 
-function createExcerpt(html) {
-  const temp = document.createElement("div");
-  temp.innerHTML = html;
 
-  // Bỏ ảnh, video, embed khỏi excerpt
-  temp.querySelectorAll("img, video, iframe, figure, audio").forEach(function (el) {
-    el.remove();
+/* =========================
+   RECOMMENDATIONS
+========================= */
+
+function getRecommendations(currentPostId) {
+
+  const otherPosts = allPosts.filter(function (post) {
+    return String(post.id) !== String(currentPostId);
   });
 
-  let text = temp.textContent || temp.innerText || "";
+  /*
+   * Lấy 3 bài đầu tiên sau khi loại bài hiện tại.
+   * Như vậy recommendation ổn định, không nhảy ngẫu nhiên
+   * mỗi lần refresh.
+   */
 
-  // Xóa khoảng trắng thừa
-  text = text.replace(/\s+/g, " ").trim();
+  return otherPosts.slice(0, 3);
+}
 
-  // Giới hạn excerpt khoảng 180 ký tự
-  if (text.length > 180) {
-    text = text.substring(0, 180).trim() + "...";
+
+function renderRecommendations(posts) {
+
+  if (!posts.length) {
+    return "";
   }
+
+  return `
+    <section class="recommendations">
+
+      <h2 class="recommendations-title">
+        Có thể bạn sẽ thích
+      </h2>
+
+      ${posts.map(function (post) {
+
+        const postUrl =
+          "?post=" + encodeURIComponent(post.id);
+
+        return `
+          <article class="recommendation">
+
+            <a href="${postUrl}">
+
+              <h3>
+                ${escapeHtml(post.title || "")}
+              </h3>
+
+              <p class="date">
+                ${escapeHtml(post.date || "")}
+              </p>
+
+            </a>
+
+          </article>
+        `;
+
+      }).join("")}
+
+    </section>
+  `;
+}
+
+
+/* =========================
+   EXCERPT
+========================= */
+
+function createExcerpt(html) {
+
+  const temp = document.createElement("div");
+
+  temp.innerHTML = html;
+
+
+  /*
+   * Không lấy những element không phù hợp
+   * để làm excerpt.
+   */
+
+  temp
+    .querySelectorAll(
+      "img, video, iframe, figure, audio, script, style"
+    )
+    .forEach(function (el) {
+      el.remove();
+    });
+
+
+  let text =
+    temp.textContent ||
+    temp.innerText ||
+    "";
+
+
+  text = text
+    .replace(/\s+/g, " ")
+    .trim();
+
+
+  /*
+   * Giới hạn excerpt.
+   */
+
+  if (text.length > 180) {
+    text =
+      text.substring(0, 180).trim() +
+      "...";
+  }
+
 
   return text;
 }
 
+
+/* =========================
+   HTML ESCAPE
+========================= */
+
 function escapeHtml(value) {
+
   return String(value)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+
+/* =========================
+   HELPERS
+========================= */
+
+function postIdExists() {
+  return Boolean(
+    new URLSearchParams(window.location.search).get("post")
+  );
 }
