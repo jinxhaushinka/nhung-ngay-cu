@@ -262,7 +262,7 @@ function renderRecommendations(posts) {
     <section class="recommendations">
 
       <h2 class="recommendations-title">
-        Có thể bạn sẽ thích
+          Những tản mạn linh tinh khác
       </h2>
 
       ${posts.map(function (post) {
